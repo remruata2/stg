@@ -77,8 +77,7 @@ const ToastItem = ({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
   }, [toast, onDismiss]);
 
   const getToastClasses = () => {
-    let baseClasses =
-      'max-w-sm w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto ring-1 overflow-hidden';
+    let baseClasses = 'max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 overflow-hidden';
 
     switch (toast.type) {
       case 'success':
@@ -87,8 +86,7 @@ const ToastItem = ({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
         return `${baseClasses} ring-red-500`;
       case 'info':
         return `${baseClasses} ring-blue-500`;
-      default:
-        return `${baseClasses} ring-gray-200 dark:ring-gray-700`;
+      default: return `${baseClasses} ring-gray-200`;
     }
   };
 
@@ -109,13 +107,13 @@ const ToastItem = ({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
   const getBgColor = () => {
     switch (toast.type) {
       case 'success':
-        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+        return 'bg-green-50 border-green-200'
       case 'error':
-        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+        return 'bg-red-50 border-red-200'
       case 'info':
-        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+        return 'bg-blue-50 border-blue-200'
       default:
-        return 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+        return 'bg-gray-50 border-gray-200'
     }
   }
 
@@ -128,11 +126,11 @@ const ToastItem = ({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
         {getIcon()}
       </div>
       <div className="ml-3 flex-1">
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{toast.message}</p>
+        <p className="text-sm font-medium text-gray-900">{toast.message}</p>
       </div>
       <button
         onClick={onDismiss}
-        className="ml-4 flex-shrink-0 inline-flex text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900"
+        className="ml-4 flex-shrink-0 inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
       >
         <span className="sr-only">Close</span>
         <XMarkIcon className="h-5 w-5" />

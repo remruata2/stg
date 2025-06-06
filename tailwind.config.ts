@@ -6,7 +6,8 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: 'class',
+  // Disable dark mode completely
+  darkMode: false,
   theme: {
     extend: {
       typography: {
@@ -15,33 +16,7 @@ const config: Config = {
             maxWidth: '100%',
           },
         },
-        dark: {
-          css: {
-            color: '#f3f4f6',
-            h1: {
-              color: '#f3f4f6',
-            },
-            h2: {
-              color: '#e5e7eb',
-            },
-            h3: {
-              color: '#d1d5db',
-            },
-            a: {
-              color: '#60a5fa',
-            },
-            strong: {
-              color: '#f3f4f6',
-            },
-            code: {
-              color: '#e5e7eb',
-            },
-            blockquote: {
-              color: '#d1d5db',
-              borderLeftColor: '#4b5563',
-            },
-          },
-        },
+        // Dark typography styles removed to enforce light mode only
       },
     },
   },

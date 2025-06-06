@@ -37,18 +37,18 @@ export default function AdminSidebar({ isOpen, setIsOpen }: AdminSidebarProps) {
     <>
       {/* Off-canvas menu for mobile, show/hide based on off-canvas menu state. */}
       <div
-        className={`fixed inset-0 bg-gray-600 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-80 z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-gray-600 bg-opacity-75 z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsOpen(false)}
       ></div>
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900 transform transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:z-0`}
+        className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:z-0`}
       >
         {/* No need for duplicate overlay */}
         
         {/* Sidebar Panel */}
-        <div className="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-gray-800 dark:bg-gray-900">
+        <div className="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-gray-800">
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
               type="button"
@@ -110,7 +110,7 @@ export default function AdminSidebar({ isOpen, setIsOpen }: AdminSidebarProps) {
       </div>
 
       {/* Static sidebar for desktop */}
-      <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:bg-gray-800 dark:bg-gray-900">
+      <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:bg-gray-800">
         <div className="flex items-center flex-shrink-0 px-6 h-16 border-b border-gray-700">
           <Link href="/admin/dashboard" className="text-white text-2xl font-bold">
             Admin Panel
