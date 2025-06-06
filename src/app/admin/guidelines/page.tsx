@@ -97,7 +97,7 @@ export default function AdminGuidelinesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 py-4">
       <div className="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
         <h1 className="text-3xl font-bold leading-tight text-gray-900">Guidelines</h1>
         <div className="mt-3 sm:mt-0 sm:ml-4">
@@ -151,7 +151,7 @@ export default function AdminGuidelinesPage() {
                     </div>
                     <div className="flex space-x-2">
                       <Link
-                        href={`/guidelines/${guideline.slug}`}
+                        href={`/admin/guidelines/view/${guideline.slug}`}
                         className="inline-flex items-center p-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         title="View"
                       >

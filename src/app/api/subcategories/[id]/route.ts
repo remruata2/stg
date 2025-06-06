@@ -2,13 +2,11 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
 interface RouteParams {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>; // params is now a Promise
 }
 
 // Redirect to categories API
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(request: Request, { params: paramsPromise }: RouteParams) {
   try {
     // Return a message indicating that subcategories have been deprecated
     return NextResponse.json(
@@ -25,7 +23,7 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 // Redirect PUT requests to categories API
-export async function PUT(request: Request, { params }: RouteParams) {
+export async function PUT(request: Request, { params: paramsPromise }: RouteParams) {
   return NextResponse.json(
     { error: 'Not Found', message: 'Subcategories have been deprecated. Please use categories API instead.' },
     { status: 410 }
@@ -33,7 +31,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 // Redirect DELETE requests to categories API
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(request: Request, { params: paramsPromise }: RouteParams) {
   return NextResponse.json(
     { error: 'Not Found', message: 'Subcategories have been deprecated. Please use categories API instead.' },
     { status: 410 }

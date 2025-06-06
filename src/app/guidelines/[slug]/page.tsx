@@ -6,9 +6,8 @@ import TagBadge from '@/components/ui/TagBadge'
 export const dynamic = 'force-dynamic'
 
 interface GuidelinePageProps {
-  params: {
-    slug: string
-  }
+  params: Promise<{ slug: string }>; // params is a Promise
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>; // Also type searchParams as Promise
 }
 
 async function getGuideline(slug: string) {
@@ -34,10 +33,10 @@ async function getGuideline(slug: string) {
   return guideline
 }
 
-export default async function GuidelinePage(props: GuidelinePageProps) {
-  // In Next.js 15, we need to ensure params is fully resolved
-  const params = await Promise.resolve(props.params);
-  const guideline = await getGuideline(params.slug)
+export default async function GuidelinePage({ params: paramsPromise, searchParams: searchParamsPromise }: GuidelinePageProps) {
+  const { slug } = await paramsPromise; // Await the promise to get slug
+  // const searchParams = searchParamsPromise ? await searchParamsPromise : {}; // Example if searchParams were needed
+  const guideline = await getGuideline(slug)
   
   if (!guideline) {
     notFound()

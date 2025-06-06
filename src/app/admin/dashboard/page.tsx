@@ -39,7 +39,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="w-full px-6 py-10">
       <div className="border-b border-gray-200 pb-5 mb-8">
         <h1 className="text-3xl font-bold leading-tight text-gray-900">Admin Dashboard</h1>
         <p className="mt-2 max-w-4xl text-sm text-gray-500">

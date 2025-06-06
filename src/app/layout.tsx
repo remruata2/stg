@@ -23,11 +23,13 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen bg-gray-50`}>
         <SessionProvider>
           <ToastProvider>
-        <NavBar />
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <header className="global-nav">
+          <NavBar />
+        </header>
+        <main className="global-main max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {children}
         </main>
-        <footer className="bg-white mt-auto">
+        <footer className="global-footer bg-white mt-auto">
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <p className="text-center text-sm text-gray-500">
               {new Date().getFullYear()} Standard Treatment Guidelines Wiki. All rights reserved.

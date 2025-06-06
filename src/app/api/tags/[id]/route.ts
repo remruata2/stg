@@ -4,19 +4,16 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 interface RouteParams {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>; // params is now a Promise
 }
 
 // Get a specific tag
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     const tag = await prisma.tag.findUnique({
-      where: { id: resolvedParams.id },
+      where: { id },
       include: {
         _count: {
           select: { guidelines: true }
@@ -42,10 +39,9 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 // Update a tag
-export async function PUT(request: Request, { params }: RouteParams) {
+export async function PUT(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     // Check if user is authenticated and is an admin
     const session = await getServerSession(authOptions)
@@ -69,7 +65,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     // Check if tag exists
     const existingTag = await prisma.tag.findUnique({
-      where: { id: resolvedParams.id }
+      where: { id }
     })
 
     if (!existingTag) {
@@ -81,7 +77,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     // Update the tag
     const updatedTag = await prisma.tag.update({
-      where: { id: resolvedParams.id },
+      where: { id },
       data: {
         name,
         description,
@@ -100,10 +96,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 // Delete a tag
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     // Check if user is authenticated and is an admin
     const session = await getServerSession(authOptions)
@@ -124,7 +119,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     // Check if tag exists
     const existingTag = await prisma.tag.findUnique({
-      where: { id: resolvedParams.id }
+      where: { id }
     })
 
     if (!existingTag) {
@@ -140,7 +135,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       where: {
         tags: {
           some: {
-            id: resolvedParams.id
+            id: id
           }
         }
       },
@@ -155,7 +150,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
             where: { id: guideline.id },
             data: {
               tags: {
-                disconnect: { id: resolvedParams.id }
+                disconnect: { id: id }
               }
             }
           })
@@ -165,7 +160,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     // Then delete the tag
     await prisma.tag.delete({
-      where: { id: resolvedParams.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true })

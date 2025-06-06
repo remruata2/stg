@@ -4,19 +4,16 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 interface RouteParams {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>; // params is now a Promise
 }
 
 // Get a specific guideline
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     const guideline = await prisma.guideline.findUnique({
-      where: { id: resolvedParams.id },
+      where: { id },
       include: {
         category: true,
         tags: true
@@ -41,10 +38,9 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 // Update a guideline
-export async function PUT(request: Request, { params }: RouteParams) {
+export async function PUT(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     // Check if user is authenticated and is an admin
     const session = await getServerSession(authOptions)
@@ -68,7 +64,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     // Check if guideline exists
     const existingGuideline = await prisma.guideline.findUnique({
-      where: { id: resolvedParams.id },
+      where: { id },
       include: {
         tags: true
       }
@@ -102,7 +98,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     // Update the guideline
     const updatedGuideline = await prisma.guideline.update({
-      where: { id: resolvedParams.id },
+      where: { id },
       data: {
         title,
         content,
@@ -130,10 +126,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 // Delete a guideline
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     // Check if user is authenticated and is an admin
     const session = await getServerSession(authOptions)
@@ -154,7 +149,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     // Check if guideline exists
     const existingGuideline = await prisma.guideline.findUnique({
-      where: { id: resolvedParams.id }
+      where: { id }
     })
 
     if (!existingGuideline) {
@@ -166,7 +161,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     // Delete the guideline
     await prisma.guideline.delete({
-      where: { id: resolvedParams.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true })

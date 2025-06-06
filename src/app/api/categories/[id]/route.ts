@@ -4,19 +4,16 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 interface RouteParams {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>; // params is now a Promise
 }
 
 // Get a specific category
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     const category = await prisma.category.findUnique({
-      where: { id: resolvedParams.id },
+      where: { id },
       include: {
         guidelines: {
           select: {
@@ -51,10 +48,9 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 // Update a category
-export async function PUT(request: Request, { params }: RouteParams) {
+export async function PUT(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     // Check if user is authenticated and is an admin
     const session = await getServerSession(authOptions)
@@ -78,7 +74,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     // Check if category exists
     const existingCategory = await prisma.category.findUnique({
-      where: { id: resolvedParams.id }
+      where: { id }
     })
 
     if (!existingCategory) {
@@ -90,7 +86,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     // Update the category
     const updatedCategory = await prisma.category.update({
-      where: { id: resolvedParams.id },
+      where: { id },
       data: {
         name,
         description,
@@ -109,10 +105,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 // Delete a category
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     // Check if user is authenticated and is an admin
     const session = await getServerSession(authOptions)
@@ -133,7 +128,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     // Check if category exists
     const existingCategory = await prisma.category.findUnique({
-      where: { id: resolvedParams.id },
+      where: { id },
       include: {
         guidelines: true
       }
@@ -149,7 +144,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     // Delete all related guidelines
     // This is a cascading delete operation
     await prisma.category.delete({
-      where: { id: resolvedParams.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true })

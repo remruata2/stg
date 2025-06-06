@@ -5,16 +5,13 @@ import { authOptions } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 
 interface RouteParams {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>; // params is now a Promise
 }
 
 // Get a specific user
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     // Check if user is authenticated and is an admin
     const session = await getServerSession(authOptions)
@@ -34,7 +31,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { id: resolvedParams.id },
+      where: { id },
       select: {
         id: true,
         name: true,
@@ -62,10 +59,9 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 // Update a user
-export async function PUT(request: Request, { params }: RouteParams) {
+export async function PUT(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     // Check if user is authenticated and is an admin
     const session = await getServerSession(authOptions)
@@ -96,7 +92,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { id: resolvedParams.id }
+      where: { id }
     })
 
     if (!existingUser) {
@@ -134,7 +130,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     
     // Update the user
     const updatedUser = await prisma.user.update({
-      where: { id: resolvedParams.id },
+      where: { id },
       data: updateData,
       select: {
         id: true,
@@ -156,10 +152,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 // Delete a user
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(request: Request, { params: paramsPromise }: RouteParams) {
   try {
-    // In Next.js 15, we need to ensure params is fully resolved
-    const resolvedParams = await Promise.resolve(params);
+    const { id } = await paramsPromise; // Await the promise to get id
     
     // Check if user is authenticated and is an admin
     const session = await getServerSession(authOptions)
@@ -180,7 +175,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { id: resolvedParams.id }
+      where: { id }
     })
 
     if (!existingUser) {
@@ -206,7 +201,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     
     // Delete the user
     await prisma.user.delete({
-      where: { id: resolvedParams.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true })

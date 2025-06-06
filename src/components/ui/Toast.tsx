@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react'
+import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from 'react'
 import { CheckCircleIcon, ExclamationCircleIcon, XMarkIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
 
 // Toast types
@@ -33,16 +33,16 @@ interface ToastProviderProps {
 export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<Toast[]>([])
 
-  // Add a new toast
-  const addToast = (message: string, type: ToastType, duration = 5000) => {
+  // Add a new toast - using useCallback to prevent infinite loops
+  const addToast = useCallback((message: string, type: ToastType, duration = 5000) => {
     const id = Math.random().toString(36).substring(2, 9)
     setToasts((prevToasts) => [...prevToasts, { id, message, type, duration }])
-  }
+  }, [])
 
-  // Remove a toast by ID
-  const removeToast = (id: string) => {
+  // Remove a toast by ID - using useCallback to prevent infinite loops
+  const removeToast = useCallback((id: string) => {
     setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id))
-  }
+  }, [])
 
   return (
     <ToastContext.Provider value={{ toasts, addToast, removeToast }}>

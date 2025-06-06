@@ -4,9 +4,8 @@ import { prisma } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 
 interface CategoryPageProps {
-  params: {
-    slug: string
-  }
+  params: Promise<{ slug: string }>; // params is a Promise
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>; // Also type searchParams as Promise
 }
 
 async function getCategory(slug: string) {
@@ -28,10 +27,10 @@ async function getCategory(slug: string) {
   return category
 }
 
-export default async function CategoryPage(props: CategoryPageProps) {
-  // In Next.js 15, we need to ensure params is fully resolved
-  const params = await Promise.resolve(props.params);
-  const category = await getCategory(params.slug)
+export default async function CategoryPage({ params: paramsPromise, searchParams: searchParamsPromise }: CategoryPageProps) {
+  const { slug } = await paramsPromise; // Await the promise to get slug
+  // const searchParams = searchParamsPromise ? await searchParamsPromise : {}; // Example if searchParams were needed
+  const category = await getCategory(slug)
   
   if (!category) {
     notFound()
