@@ -62,18 +62,37 @@ export function useToast() {
 }
 
 // Toast item component
-function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
-  useEffect(() => {
-    if (toast.duration) {
-      const timer = setTimeout(() => {
-        onClose()
-      }, toast.duration)
-      return () => clearTimeout(timer)
-    }
-  }, [toast, onClose])
+const ToastItem = ({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }) => {
+  const [isVisible, setIsVisible] = useState(true);
 
-  // Get the appropriate icon based on toast type
-  const Icon = () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+      setTimeout(() => {
+        onDismiss();
+      }, 300); // Wait for fade out animation
+    }, toast.duration || 5000);
+
+    return () => clearTimeout(timer);
+  }, [toast, onDismiss]);
+
+  const getToastClasses = () => {
+    let baseClasses =
+      'max-w-sm w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto ring-1 overflow-hidden';
+
+    switch (toast.type) {
+      case 'success':
+        return `${baseClasses} ring-green-500`;
+      case 'error':
+        return `${baseClasses} ring-red-500`;
+      case 'info':
+        return `${baseClasses} ring-blue-500`;
+      default:
+        return `${baseClasses} ring-gray-200 dark:ring-gray-700`;
+    }
+  };
+
+  const getIcon = () => {
     switch (toast.type) {
       case 'success':
         return <CheckCircleIcon className="h-5 w-5 text-green-500" />
@@ -90,13 +109,13 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   const getBgColor = () => {
     switch (toast.type) {
       case 'success':
-        return 'bg-green-50 border-green-200'
+        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
       case 'error':
-        return 'bg-red-50 border-red-200'
+        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
       case 'info':
-        return 'bg-blue-50 border-blue-200'
+        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
       default:
-        return 'bg-gray-50 border-gray-200'
+        return 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
     }
   }
 
@@ -106,14 +125,14 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
       role="alert"
     >
       <div className="flex-shrink-0">
-        <Icon />
+        {getIcon()}
       </div>
       <div className="ml-3 flex-1">
-        <p className="text-sm font-medium text-gray-900">{toast.message}</p>
+        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{toast.message}</p>
       </div>
       <button
-        onClick={onClose}
-        className="ml-4 flex-shrink-0 inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        onClick={onDismiss}
+        className="ml-4 flex-shrink-0 inline-flex text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900"
       >
         <span className="sr-only">Close</span>
         <XMarkIcon className="h-5 w-5" />
@@ -130,7 +149,7 @@ function ToastContainer() {
     <div className="fixed bottom-0 right-0 p-6 z-50 space-y-4 pointer-events-none">
       {toasts.map((toast) => (
         <div key={toast.id} className="pointer-events-auto">
-          <ToastItem toast={toast} onClose={() => removeToast(toast.id)} />
+          <ToastItem toast={toast} onDismiss={() => removeToast(toast.id)} />
         </div>
       ))}
     </div>

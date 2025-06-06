@@ -36,15 +36,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <SessionProvider>
       <ToastProvider>
-        <div className="min-h-screen bg-gray-100 flex w-full">
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex w-full">
           <AdminSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
           <div className="flex flex-col flex-1 w-full lg:ml-64"> {/* Made full width and adjusted margin for fixed sidebar */}
             {/* Mobile header with toggle button - minimized to just the hamburger button */}
-            <div className="sticky top-0 z-50 bg-gray-100 lg:hidden">
+            <div className="sticky top-0 z-50 bg-gray-100 dark:bg-gray-800 lg:hidden">
               <div className="flex h-16 items-center px-4">
                 <button
                   type="button"
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 dark:focus:ring-blue-400"
                   onClick={() => setSidebarOpen(true)}
                 >
                   <span className="sr-only">Open sidebar</span>
