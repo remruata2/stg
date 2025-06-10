@@ -40,7 +40,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-0 w-full flex items-center justify-center bg-gray-50 py-8">
-      <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-lg">
+      <div className="w-full min-w-lg p-8 bg-white rounded-2xl shadow-lg">
         {/* App branding */}
         <div className="text-center mb-6">
           <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3">
