@@ -92,7 +92,7 @@ export default function EditGuidelineClient({ id }: { id: string }) {
     title: string
     content: string
     categoryId: string
-    tags: AdminTagItem[]
+    tags: string[]
   }) => {
     try {
       const response = await fetch(`/api/guidelines/${id}`, {
@@ -104,7 +104,7 @@ export default function EditGuidelineClient({ id }: { id: string }) {
           title: formData.title,
           content: formData.content,
           categoryId: formData.categoryId,
-          tagIds: formData.tags.map((tag: AdminTagItem) => tag.id),
+          tagIds: formData.tags,
         }),
       })
 
@@ -158,12 +158,7 @@ export default function EditGuidelineClient({ id }: { id: string }) {
       </div>
 
       <GuidelineForm
-        initialValues={{
-          title: guideline.title,
-          content: guideline.content,
-          categoryId: guideline.categoryId
-        }}
-        initialTags={guideline.tags}
+        initialData={guideline}
         categories={categories}
         availableTags={availableTags}
         onSubmit={handleSubmit}
