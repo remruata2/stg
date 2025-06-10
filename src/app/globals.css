@@ -1,21 +1,30 @@
 @import "tailwindcss";
 
 :root {
-	--background: #ffffff;
-	--foreground: #171717;
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
 @theme inline {
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
-	--font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 /* Dark mode media query removed to enforce light mode */
 
 body {
-	background: var(--background);
-	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom animation delays for login page background elements */
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
 }
