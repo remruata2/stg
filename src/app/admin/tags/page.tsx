@@ -26,6 +26,7 @@ export default function AdminTagsPage() {
   const [currentTag, setCurrentTag] = useState<TagItem | null>(null)
   const [newTagName, setNewTagName] = useState('')
   const [newTagDescription, setNewTagDescription] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const { addToast } = useToast()
@@ -33,6 +34,10 @@ export default function AdminTagsPage() {
   useEffect(() => {
     fetchTags()
   }, [])
+
+  const filteredTags = tags.filter(tag =>
+    tag.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   const fetchTags = async () => {
     setIsLoading(true)
@@ -63,7 +68,7 @@ export default function AdminTagsPage() {
         },
         body: JSON.stringify({
           name: newTagName,
-          description: newTagDescription || undefined,
+          description: newTagDescription,
         }),
       })
       
@@ -98,7 +103,7 @@ export default function AdminTagsPage() {
         },
         body: JSON.stringify({
           name: newTagName,
-          description: newTagDescription || undefined,
+          description: newTagDescription,
         }),
       })
       
@@ -155,13 +160,27 @@ export default function AdminTagsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-6">
       <div className="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
         <h1 className="text-3xl font-bold leading-tight text-gray-900">Tags</h1>
-        <div className="mt-3 sm:mt-0 sm:ml-4">
+        <div className="mt-3 sm:mt-0 sm:ml-4 flex items-center">
+          <div className="mr-4">
+            <input
+              type="text"
+              placeholder="Search tags..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
+            />
+          </div>
           <button
             type="button"
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => {
+              setCurrentTag(null)
+              setNewTagName('')
+              setNewTagDescription('')
+              setShowCreateModal(true)
+            }}
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <PlusIcon className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
@@ -174,10 +193,10 @@ export default function AdminTagsPage() {
         <div className="flex justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
         </div>
-      ) : tags.length > 0 ? (
+      ) : filteredTags.length > 0 ? (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
           <ul className="divide-y divide-gray-200">
-            {tags.map((tag) => (
+            {filteredTags.map((tag) => (
               <li key={tag.id}>
                 <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
                   <div className="flex flex-col">

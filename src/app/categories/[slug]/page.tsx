@@ -1,11 +1,13 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/db'
+import Link from 'next/link'
+import { ChevronRightIcon } from '@heroicons/react/24/outline'
 
 export const dynamic = 'force-dynamic'
 
 interface CategoryPageProps {
-  params: Promise<{ slug: string }>; // params is a Promise
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>; // Also type searchParams as Promise
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 async function getCategory(slug: string) {
@@ -27,9 +29,8 @@ async function getCategory(slug: string) {
   return category
 }
 
-export default async function CategoryPage({ params: paramsPromise, searchParams: searchParamsPromise }: CategoryPageProps) {
-  const { slug } = await paramsPromise; // Await the promise to get slug
-  // const searchParams = searchParamsPromise ? await searchParamsPromise : {}; // Example if searchParams were needed
+export default async function CategoryPage({ params: paramsPromise }: CategoryPageProps) {
+  const { slug } = await paramsPromise;
   const category = await getCategory(slug)
   
   if (!category) {
@@ -37,51 +38,53 @@ export default async function CategoryPage({ params: paramsPromise, searchParams
   }
 
   return (
-    <div className="space-y-6">
-      <div className="border-b border-gray-200 pb-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold leading-tight text-gray-900">{category.name}</h1>
-            {category.description && (
-              <p className="mt-2 max-w-4xl text-sm text-gray-500">
-                {category.description}
-              </p>
-            )}
-          </div>
-          <div className="mt-4 sm:mt-0">
-            <a
-              href="/categories"
-              className="text-sm font-medium text-blue-600 hover:text-blue-500"
-            >
-              ← Back to all categories
-            </a>
-          </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Section */}
+      <section className="bg-slate-100 dark:bg-slate-800 rounded-xl p-8 mb-12 text-center">
+        <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
+          {category.name}
+        </h1>
+        {category.description && (
+          <p className="mt-4 max-w-3xl mx-auto text-lg text-slate-600 dark:text-slate-300">
+            {category.description}
+          </p>
+        )}
+        <div className="mt-6">
+          <Link
+            href="/categories"
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
+          >
+            ← Back to all categories
+          </Link>
         </div>
-      </div>
+      </section>
 
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Guidelines</h2>
-      
-      <div className="grid grid-cols-1 gap-4">
+      {/* Guidelines List */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {category.guidelines.length > 0 ? (
           category.guidelines.map((guideline) => (
-            <div
+            <Link
               key={guideline.id}
-              className="group relative bg-white p-4 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 shadow rounded-lg hover:shadow-md transition-shadow duration-200"
+              href={`/guidelines/${guideline.slug}`}
+              className="group block bg-white dark:bg-slate-800 p-6 shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-blue-400"
             >
-              <h3 className="text-lg font-medium text-gray-900">
-                <a href={`/guidelines/${guideline.slug}`} className="hover:underline focus:outline-none">
-                  <span className="absolute inset-0" aria-hidden="true" />
-                  {guideline.title}
-                </a>
-              </h3>
-              <p className="mt-2 text-sm text-gray-500">
-                Last updated: {new Date(guideline.updatedAt).toLocaleDateString()}
-              </p>
-            </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {guideline.title}
+                  </h3>
+                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                    Last updated: {new Date(guideline.updatedAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <ChevronRightIcon className="h-6 w-6 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-transform group-hover:translate-x-1" />
+              </div>
+            </Link>
           ))
         ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No guidelines found in this category</p>
+          <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-200">No Guidelines Found</h3>
+            <p className="mt-2 text-slate-500 dark:text-slate-400">There are currently no guidelines in this category.</p>
           </div>
         )}
       </div>

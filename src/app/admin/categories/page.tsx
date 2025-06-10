@@ -25,6 +25,7 @@ export default function AdminCategoriesPage() {
   const [currentCategory, setCurrentCategory] = useState<CategoryItem | null>(null)
   const [newCategoryName, setNewCategoryName] = useState('')
   const [newCategoryDescription, setNewCategoryDescription] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const { addToast } = useToast()
@@ -32,6 +33,10 @@ export default function AdminCategoriesPage() {
   useEffect(() => {
     fetchCategories()
   }, [])
+
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   const fetchCategories = async () => {
     setIsLoading(true)
@@ -154,10 +159,19 @@ export default function AdminCategoriesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-6">
       <div className="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
         <h1 className="text-3xl font-bold leading-tight text-gray-900">Categories</h1>
-        <div className="mt-3 sm:mt-0 sm:ml-4">
+                <div className="mt-3 sm:mt-0 sm:ml-4 flex items-center">
+          <div className="mr-4">
+            <input
+              type="text"
+              placeholder="Search categories..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
+            />
+          </div>
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
@@ -173,10 +187,10 @@ export default function AdminCategoriesPage() {
         <div className="flex justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
         </div>
-      ) : categories.length > 0 ? (
+      ) : filteredCategories.length > 0 ? (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
           <ul className="divide-y divide-gray-200">
-            {categories.map((category) => (
+            {filteredCategories.map((category) => (
               <li key={category.id}>
                 <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
                   <div className="flex flex-col">
@@ -239,7 +253,7 @@ export default function AdminCategoriesPage() {
                     id="name"
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
                     placeholder="Enter category name"
                     required
                   />
@@ -253,7 +267,7 @@ export default function AdminCategoriesPage() {
                     value={newCategoryDescription}
                     onChange={(e) => setNewCategoryDescription(e.target.value)}
                     rows={3}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
                     placeholder="Enter category description (optional)"
                   />
                 </div>
@@ -305,7 +319,7 @@ export default function AdminCategoriesPage() {
                     id="edit-name"
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
                     placeholder="Enter category name"
                     required
                   />
@@ -319,7 +333,7 @@ export default function AdminCategoriesPage() {
                     value={newCategoryDescription}
                     onChange={(e) => setNewCategoryDescription(e.target.value)}
                     rows={3}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
                     placeholder="Enter category description (optional)"
                   />
                 </div>

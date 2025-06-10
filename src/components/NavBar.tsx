@@ -15,7 +15,7 @@ export default function NavBar() {
 	const isAdmin = session?.user?.role === "ADMIN";
 
 	const handleSignOut = async () => {
-		await signOut({ redirect: false });
+		await signOut({ callbackUrl: '/' }); // Allow default redirect to homepage
 		addToast("You have been signed out", "success");
 	};
 

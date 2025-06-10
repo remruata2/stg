@@ -24,7 +24,13 @@ interface GuidelineDetail {
     id: string
     name: string
     slug: string
-  }[]
+  }[],
+  references?: {
+    id: string;
+    title: string;
+    url?: string | null;
+    description?: string | null;
+  }[];
 }
 
 export default function AdminViewGuideline({ params }: { params: Promise<{ slug: string }> }) {
@@ -44,7 +50,7 @@ export default function AdminViewGuideline({ params }: { params: Promise<{ slug:
     setIsLoading(true)
     try {
       console.log('Fetching guideline with slug:', slug)
-      const response = await fetch(`/api/guidelines/slug/${slug}`)
+      const response = await fetch(`/api/guidelines/slug/${slug}`, { cache: 'no-store' })
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -218,6 +224,34 @@ export default function AdminViewGuideline({ params }: { params: Promise<{ slug:
           <Markdown>{guideline.content}</Markdown>
         </div>
       </div>
+
+      {guideline.references && guideline.references.length > 0 && (
+        <div className="mt-6">
+          <h2 className="text-xl font-semibold text-gray-900">References</h2>
+          <div className="mt-4 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl p-6">
+            <ul className="space-y-4">
+              {guideline.references.map((ref) => (
+                <li key={ref.id} className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                  <p className="font-semibold text-gray-800">{ref.title}</p>
+                  {ref.url && (
+                    <a 
+                      href={ref.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:underline break-all"
+                    >
+                      {ref.url}
+                    </a>
+                  )}
+                  {ref.description && (
+                    <p className="text-sm text-gray-600 mt-1">{ref.description}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Delete Guideline Modal */}
       {showDeleteModal && (

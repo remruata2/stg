@@ -50,11 +50,12 @@ export default function EditGuidelineClient({ id }: { id: string }) {
 			setIsLoading(true);
 			try {
 				// Fetch the guideline data
-				const guidelineResponse = await fetch(`/api/guidelines/${id}`);
+				const guidelineResponse = await fetch(`/api/guidelines/${id}`, { cache: 'no-store' });
 				if (!guidelineResponse.ok) {
 					throw new Error("Failed to fetch guideline");
 				}
 				const guidelineData = await guidelineResponse.json();
+				console.log('[EditGuidelineClient] Fetched guidelineData:', JSON.stringify(guidelineData, null, 2)); // Log fetched data
 				setGuideline(guidelineData);
 
 				// Fetch categories
@@ -77,7 +78,7 @@ export default function EditGuidelineClient({ id }: { id: string }) {
 			} catch (error) {
 				console.error("Error fetching data:", error);
 				setError("Failed to load guideline data. Please try again.");
-				addToast("Failed to load guideline data", "error");
+				addToast(`Failed to load guideline data: ${error instanceof Error ? error.message : 'Unknown error'}`, "error");
 			} finally {
 				setIsLoading(false);
 			}
@@ -92,32 +93,50 @@ export default function EditGuidelineClient({ id }: { id: string }) {
 		title: string;
 		content: string;
 		categoryId: string;
-		tags: AdminTagItem[];
+		tags: string[];
+		references?: Array<{ title: string; url?: string; description?: string }>; // Add references here
 	}) => {
+		console.log('EditGuidelineClient handleSubmit called with:', formData);
+		console.log('Guideline ID:', id);
+		
 		try {
+			const requestBody = {
+				title: formData.title,
+				content: formData.content,
+				categoryId: formData.categoryId,
+				tagIds: formData.tags,
+				references: formData.references, // Add references to request body
+			};
+			
+			console.log('Sending PUT request to:', `/api/guidelines/${id}`);
+			console.log('Request body:', requestBody);
+			
 			const response = await fetch(`/api/guidelines/${id}`, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({
-					title: formData.title,
-					content: formData.content,
-					categoryId: formData.categoryId,
-					tagIds: formData.tags.map((tag: AdminTagItem) => tag.id),
-				}),
+				body: JSON.stringify(requestBody),
 			});
 
+			console.log('Response status:', response.status);
+			console.log('Response ok:', response.ok);
+			
 			if (!response.ok) {
 				const errorData = await response.json();
+				console.error('Error data received:', errorData);
 				throw new Error(errorData.error || "Failed to update guideline");
 			}
 
+			const responseData = await response.json();
+			console.log('Success response:', responseData);
+			
 			addToast("Guideline updated successfully", "success");
 			router.push("/admin/guidelines");
 		} catch (error) {
-			console.error("Error updating guideline:", error);
-			addToast("Failed to update guideline", "error");
+			console.error('Error updating guideline:', error);
+			// Display more detailed error message
+			addToast(`Failed to update guideline: ${error instanceof Error ? error.message : 'Unknown error'}`, "error");
 		}
 	};
 
@@ -162,18 +181,14 @@ export default function EditGuidelineClient({ id }: { id: string }) {
 				</div>
 			</div>
 
-			<GuidelineForm
-				initialValues={{
-					title: guideline.title,
-					content: guideline.content,
-					categoryId: guideline.categoryId,
-				}}
-				initialTags={guideline.tags}
-				categories={categories}
-				availableTags={availableTags}
-				onSubmit={handleSubmit}
-				submitButtonText="Update Guideline"
-			/>
+			<GuidelineForm 
+          key={guideline.id} // Force re-mount on data load
+          initialData={guideline}
+          categories={categories}
+          availableTags={availableTags}
+          onSubmit={handleSubmit}
+          submitButtonText="Update Guideline"
+        />
 		</div>
 	);
 }

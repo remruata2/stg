@@ -14,8 +14,7 @@ export default function CreateTagDialog({ onTagCreated, onCancel }: CreateTagDia
   const [isLoading, setIsLoading] = useState(false)
   const { addToast } = useToast()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
     
     if (!name.trim()) {
       addToast('Tag name is required', 'error')
@@ -53,7 +52,7 @@ export default function CreateTagDialog({ onTagCreated, onCancel }: CreateTagDia
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
         <h2 className="text-lg font-medium text-gray-900 mb-4">Create New Tag</h2>
         
-        <form onSubmit={handleSubmit}>
+        <div>
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -64,7 +63,7 @@ export default function CreateTagDialog({ onTagCreated, onCancel }: CreateTagDia
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
                 placeholder="Enter tag name"
                 required
               />
@@ -79,7 +78,7 @@ export default function CreateTagDialog({ onTagCreated, onCancel }: CreateTagDia
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
                 placeholder="Enter tag description (optional)"
               />
             </div>
@@ -87,7 +86,8 @@ export default function CreateTagDialog({ onTagCreated, onCancel }: CreateTagDia
           
           <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               disabled={isLoading}
               className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm"
             >
@@ -111,7 +111,7 @@ export default function CreateTagDialog({ onTagCreated, onCancel }: CreateTagDia
               Cancel
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   )

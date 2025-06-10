@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import GuidelineForm from '@/components/GuidelineForm'
 import { useToast } from '@/components/ui/Toast'
+import { useSession } from 'next-auth/react'
 
 interface TagItem {
   id: string
@@ -30,6 +31,13 @@ export default function AdminNewGuidelinePage() {
   const [isLoadingTags, setIsLoadingTags] = useState(true)
   const router = useRouter()
   const { addToast } = useToast()
+  const { data: session, status } = useSession()
+  
+  // Debug auth status
+  useEffect(() => {
+    console.log('Auth status:', status)
+    console.log('Session:', session)
+  }, [session, status])
   
   // Fetch categories when component mounts
   useEffect(() => {
@@ -74,9 +82,12 @@ export default function AdminNewGuidelinePage() {
   }, [addToast])
   
   const handleSubmit = async (data: any) => {
+    console.log('New guideline handleSubmit called with:', data);
     setIsLoading(true)
     
     try {
+      console.log('Sending POST request to /api/guidelines with:', data);
+      
       const response = await fetch('/api/guidelines', {
         method: 'POST',
         headers: {
@@ -85,24 +96,30 @@ export default function AdminNewGuidelinePage() {
         body: JSON.stringify(data),
       })
       
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      
       if (!response.ok) {
-        throw new Error('Failed to create guideline')
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Error response data:', errorData);
+        throw new Error(errorData.error || 'Failed to create guideline');
       }
       
-      const guideline = await response.json()
+      const guideline = await response.json();
+      console.log('Success response:', guideline);
       
       // Show success toast notification
-      addToast('Guideline created successfully', 'success')
+      addToast('Guideline created successfully', 'success');
       
-      // Redirect to the newly created guideline
-      router.push(`/guidelines/${guideline.slug}`)
-      router.refresh()
+      // Redirect to the admin guidelines list page
+      router.push(`/admin/guidelines`);
+      router.refresh();
     } catch (error) {
-      console.error('Error creating guideline:', error)
+      console.error('Error creating guideline:', error);
       // Show error toast notification
-      addToast('Failed to create guideline. Please try again.', 'error')
+      addToast(`Failed to create guideline: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 

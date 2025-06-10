@@ -1,118 +1,98 @@
-import { prisma } from '@/lib/db'
-import SearchBar from '@/components/SearchBar'
+import { prisma } from "@/lib/db";
+import SearchBar from "@/components/SearchBar";
+import Link from "next/link";
+import Image from "next/image";
+import {
+	AcademicCapIcon,
+	HeartIcon,
+	ClipboardDocumentListIcon,
+	UsersIcon,
+	BeakerIcon,
+	BookOpenIcon,
+} from "@heroicons/react/24/outline";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
-async function getFeaturedCategories() {
-  // Get top 3 categories with the most guidelines
-  const categories = await prisma.category.findMany({
-    include: {
-      _count: {
-        select: { guidelines: true }
-      }
-    },
-    orderBy: {
-      guidelines: {
-        _count: 'desc'
-      }
-    },
-    take: 3
-  })
-  return categories
-}
+// Icons for Categories
+const categoryIconsList = [
+	AcademicCapIcon,
+	HeartIcon,
+	ClipboardDocumentListIcon,
+	UsersIcon,
+	BeakerIcon,
+	BookOpenIcon,
+];
 
-async function getRecentGuidelines() {
-  // Get 3 most recently updated guidelines
-  const guidelines = await prisma.guideline.findMany({
-    include: {
-      category: true
-    },
-    orderBy: {
-      updatedAt: 'desc'
-    },
-    take: 3
-  })
-  return guidelines
+// Fetch all categories
+async function getAllCategories() {
+	const categories = await prisma.category.findMany({
+		include: {
+			_count: {
+				select: { guidelines: true },
+			},
+		},
+		orderBy: {
+			name: "asc",
+		},
+	});
+	return categories;
 }
 
 export default async function Home() {
-  const [featuredCategories, recentGuidelines] = await Promise.all([
-    getFeaturedCategories(),
-    getRecentGuidelines()
-  ])
+	const allCategories = await getAllCategories();
 
-  return (
-    <div className="space-y-8">
-      {/* Hero section */}
-      <div className="text-center py-12 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
-          Standard Treatment Guidelines
-        </h1>
-        <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-          A comprehensive resource for medical professionals, providing evidence-based treatment guidelines.
-        </p>
-        
-        {/* Prominent Search Bar */}
-        <div className="mt-8 max-w-2xl mx-auto">
-          <div className="relative rounded-md shadow-lg">
-            <SearchBar />
-          </div>
-          <p className="mt-2 text-sm text-gray-500">Search for guidelines, categories, or medical conditions</p>
-        </div>
-      </div>
+	return (
+		<div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center px-4 py-8">
+			{/* Logo */}
+			<div className="mb-4">
+				<Image
+					src="/logostg.png"
+					alt="STG Wiki Logo"
+					width={200}
+					height={200}
+					priority
+				/>
+			</div>
 
-      {/* Featured Categories */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Categories</h2>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredCategories.length > 0 ? (
-            featuredCategories.map((category) => (
-              <div key={category.id} className="group relative bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                <h3 className="text-lg font-medium text-gray-900">
-                  <a href={`/categories/${category.slug}`} className="focus:outline-none">
-                    <span className="absolute inset-0" aria-hidden="true" />
-                    {category.name}
-                  </a>
-                </h3>
-                <p className="mt-2 text-sm text-gray-500">{category._count.guidelines} guidelines</p>
-              </div>
-            ))
-          ) : (
-            <div className="col-span-full text-center py-6">
-              <p className="text-gray-500">No categories found</p>
-            </div>
-          )}
-        </div>
-      </div>
+			{/* Title and Subtitle */}
+			<h1 className="sr-only">Standard Treatment Guidelines</h1>
+			<p className="text-2xl text-slate-600 dark:text-slate-500 mb-8">
+				Standard Treatment Guidelines
+			</p>
 
-      {/* Recent Guidelines */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Guidelines</h2>
-        <div className="space-y-4">
-          {recentGuidelines.length > 0 ? (
-            recentGuidelines.map((guideline) => (
-              <div key={guideline.id} className="relative bg-gray-50 p-4 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                <h3 className="text-lg font-medium text-gray-900">
-                  <a href={`/guidelines/${guideline.slug}`} className="hover:underline">
-                    {guideline.title}
-                  </a>
-                </h3>
-                <div className="mt-2 flex items-center text-sm text-gray-500 space-x-4">
-                  <span>{guideline.category.name}</span>
-                  <span>•</span>
-                  <time dateTime={guideline.updatedAt.toISOString()}>
-                    {new Date(guideline.updatedAt).toLocaleDateString()}
-                  </time>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-6">
-              <p className="text-gray-500">No guidelines found</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
+			{/* Search Bar */}
+			<div className="w-full max-w-2xl mb-12">
+				<SearchBar />
+			</div>
+
+			{/* Category Cards Grid */}
+			{allCategories.length > 0 && (
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full">
+					{allCategories.map((category, index) => {
+						const IconComponent =
+							categoryIconsList[index % categoryIconsList.length];
+						return (
+							<Link
+								key={category.id}
+								href={`/categories/${category.slug}`}
+								className="group bg-white dark:bg-slate-800 p-6 shadow-lg rounded-xl hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4 text-left hover:bg-slate-50 dark:hover:bg-slate-700"
+							>
+								<div className="flex-shrink-0">
+									<IconComponent className="h-10 w-10 text-blue-600 dark:text-blue-400" />
+								</div>
+								<div>
+									<h3 className="text-lg font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+										{category.name}
+									</h3>
+									<p className="text-sm text-slate-500 dark:text-slate-400">
+										{category._count.guidelines.toLocaleString()} guidelines
+									</p>
+								</div>
+							</Link>
+						);
+					})}
+				</div>
+			)}
+		</div>
+	);
 }

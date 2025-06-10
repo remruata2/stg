@@ -28,6 +28,7 @@ export async function GET(
       include: {
         category: true,
         tags: true,
+        references: true,
         revisions: {
           orderBy: {
             createdAt: 'desc'
