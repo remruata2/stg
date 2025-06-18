@@ -1,6 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { guidelineSchema, GuidelineFormValues } from '@/types/guideline';
 import { useRouter } from 'next/navigation'
 import GuidelineForm from '@/components/GuidelineForm'
 import { useToast } from '@/components/ui/Toast'
@@ -24,7 +27,18 @@ interface Tag {
 }
 
 export default function NewGuidelinePage() {
-  const [isLoading, setIsLoading] = useState(false)
+  const { register, control, handleSubmit: formHandleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<GuidelineFormValues>({
+    resolver: zodResolver(guidelineSchema),
+    defaultValues: {
+      title: '',
+      content: '',
+      categoryId: '', // Make sure mockCategories has a default or handle empty selection
+      tags: [],
+      references: [],
+    },
+  });
+
+  
   const [availableTags, setAvailableTags] = useState<Tag[]>([])
   const [isLoadingTags, setIsLoadingTags] = useState(true)
   const router = useRouter()
@@ -49,8 +63,8 @@ export default function NewGuidelinePage() {
     fetchTags()
   }, [])
   
-  const handleSubmit = async (data: any) => {
-    setIsLoading(true)
+  const actualSubmitHandler = async (data: GuidelineFormValues) => {
+    
     
     try {
       // In a real app, you would call your API here
@@ -78,10 +92,13 @@ export default function NewGuidelinePage() {
       console.error('Error creating guideline:', error)
       // Show error toast notification
       addToast('Failed to create guideline. Please try again.', 'error')
-    } finally {
-      setIsLoading(false)
     }
   }
+
+  const watchedTags = watch('tags', []);
+  const handleTagsChange = (newTags: Tag[]) => {
+    setValue('tags', newTags.map(t => t.id), { shouldValidate: true });
+  };
   
   return (
     <div className="space-y-6">
@@ -98,12 +115,26 @@ export default function NewGuidelinePage() {
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : (
-          <GuidelineForm 
-            categories={mockCategories} 
-            availableTags={availableTags}
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-          />
+            <form onSubmit={formHandleSubmit(actualSubmitHandler)} className="space-y-6">
+              <GuidelineForm 
+                categories={mockCategories} 
+                availableTags={availableTags}
+                control={control}
+                register={register}
+                errors={errors}
+                selectedTags={availableTags.filter(tag => watchedTags.includes(tag.id))}
+                onTagsChange={handleTagsChange}
+
+                initialContent=""
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+              >
+                {isSubmitting ? 'Creating...' : 'Create Guideline'}
+              </button>
+            </form>
         )}
       </div>
     </div>

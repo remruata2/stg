@@ -23,6 +23,7 @@ interface GuidelineFormProps {
   selectedTags: Tag[];
   onTagsChange: (tags: Tag[]) => void;
   initialContent?: string;
+
 }
 
 export default function GuidelineForm({
@@ -41,7 +42,7 @@ export default function GuidelineForm({
 	});
 
 	return (
-		<div className="space-y-6">
+    <div className="space-y-6">
 			<div>
 				<label
 					htmlFor="title"
@@ -121,6 +122,9 @@ export default function GuidelineForm({
 				<p className="mt-1 text-xs text-gray-500">
 					Add tags to categorize this guideline and make it easier to find.
 				</p>
+				{errors.tags && (
+					<p className="mt-1 text-sm text-red-600">{errors.tags.message as string}</p>
+				)}
 			</div>
 
 			{/* References Section */}
@@ -207,6 +211,7 @@ export default function GuidelineForm({
 					Add Reference
 				</button>
 			</div>
-		</div>
+
+</div>
 	);
 }

@@ -156,7 +156,7 @@ export default function EditGuidelineClient({ id }: { id: string }) {
 			console.log('Success response:', responseData);
 			
 			addToast("Guideline updated successfully", "success");
-			router.push("/admin/guidelines");
+			router.refresh(); // Refresh the current page to show updated data
 		} catch (error) {
 			console.error('Error updating guideline:', error);
 			// Display more detailed error message
@@ -215,6 +215,7 @@ export default function EditGuidelineClient({ id }: { id: string }) {
           selectedTags={availableTags.filter(t => watch('tags', []).includes(t.id))}
           onTagsChange={handleTagsChange}
           initialContent={guideline.content}
+
         />
         <button
           type="submit"

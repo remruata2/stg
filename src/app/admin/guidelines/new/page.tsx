@@ -128,6 +128,7 @@ export default function AdminNewGuidelinePage() {
               availableTags={availableTags}
               selectedTags={availableTags.filter(t => selectedTags.includes(t.id))}
               onTagsChange={handleTagsChange}
+
             />
 
             
