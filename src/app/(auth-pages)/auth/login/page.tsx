@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -39,8 +40,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-0 w-full flex items-center justify-center bg-gray-50 py-8">
-      <div className="w-full min-w-lg p-8 bg-white rounded-2xl shadow-lg">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-8 px-4 relative">
+      {/* Theme toggle in top right */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+
+      <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
         {/* App branding */}
         <div className="text-center mb-6">
           <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3">
@@ -58,10 +64,16 @@ export default function LoginPage() {
               ></path>
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">STG Mizoram</h1>
-          <p className="text-gray-600 mb-4">Admin Portal</p>
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Welcome back</h2>
-          <p className="text-gray-600">Sign in to your admin account</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+            STG Mizoram
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Admin Portal</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+            Welcome back
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Sign in to your admin account
+          </p>
         </div>
 
         {/* Login form */}
@@ -70,7 +82,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email-address"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
               >
                 Email address
               </label>
@@ -80,7 +92,7 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 placeholder="admin@stgwiki.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -90,7 +102,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
               >
                 Password
               </label>
@@ -100,7 +112,7 @@ export default function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 dark:bg-gray-700 focus:bg-white dark:focus:bg-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -161,7 +173,7 @@ export default function LoginPage() {
 
           {/* Footer */}
           <div className="mt-4 text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               Secure access to medical guidelines
             </p>
           </div>

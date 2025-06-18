@@ -1,6 +1,5 @@
 import { ToastProvider } from "@/components/ui/Toast";
 import SessionProvider from "@/components/SessionProvider";
-import ThemeEnforcer from "@/components/ThemeEnforcer";
 import { Inter } from "next/font/google";
 import "../../globals.css";
 
@@ -12,19 +11,13 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="light">
-      <head>
-        <meta name="color-scheme" content="light" />
-        <title>Admin Login - STG Mizoram</title>
-      </head>
-      <body
-        className={`${inter.className} min-h-screen bg-white text-gray-900`}
-      >
-        <ThemeEnforcer />
-        <SessionProvider>
-          <ToastProvider>{children}</ToastProvider>
-        </SessionProvider>
-      </body>
-    </html>
+    <div
+      className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+      data-auth-page
+    >
+      <SessionProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </SessionProvider>
+    </div>
   );
 }

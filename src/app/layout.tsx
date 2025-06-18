@@ -5,7 +5,8 @@ import SearchBar from "@/components/SearchBar";
 import { ToastProvider } from "@/components/ui/Toast";
 import SessionProvider from "@/components/SessionProvider";
 import NavBar from "@/components/NavBar";
-import ThemeEnforcer from "@/components/ThemeEnforcer";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import Image from "next/image";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,31 +21,52 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="light">
-      {/* Force light mode with meta tag */}
-      <meta name="color-scheme" content="light" />
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.className} min-h-screen bg-white text-gray-900 flex flex-col`}
+        className={`${inter.className} min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col`}
       >
-        <ThemeEnforcer />
-        <SessionProvider>
-          <ToastProvider>
-            <header className="global-nav">
-              <NavBar />
-            </header>
-            <main className="global-main max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex-grow">
-              {children}
-            </main>
-            <footer className="global-footer bg-white border-t border-gray-200 mt-auto">
-              <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                <p className="text-center text-gray-500 text-sm">
-                  {new Date().getFullYear()} Standard Treatment Guidelines,
-                  Mizoram. All rights reserved.
-                </p>
-              </div>
-            </footer>
-          </ToastProvider>
-        </SessionProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange={false}
+        >
+          <SessionProvider>
+            <ToastProvider>
+              <header className="global-nav">
+                <NavBar />
+              </header>
+              <main className="global-main max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex-grow">
+                {children}
+              </main>
+              <footer className="global-footer bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
+                <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                  <div className="flex flex-col items-center space-y-4">
+                    {/* Powered by MHSSP */}
+                    <div className="flex items-center space-x-3">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        Powered by
+                      </span>
+                      <Image
+                        src="/logomhsssp.webp"
+                        alt="MHSSP Logo"
+                        width={150}
+                        height={150}
+                        className="h-15 w-auto"
+                      />
+                    </div>
+
+                    {/* Copyright */}
+                    <p className="text-center text-gray-500 dark:text-gray-400 text-sm">
+                      © {new Date().getFullYear()} Health & Family Welfare
+                      Department, Government of Mizoram. All rights reserved.
+                    </p>
+                  </div>
+                </div>
+              </footer>
+            </ToastProvider>
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

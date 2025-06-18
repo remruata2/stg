@@ -590,7 +590,7 @@ const TiptapEditor = ({
     editorProps: {
       attributes: {
         class:
-          "prose dark:prose-invert prose-h2:text-xl sm:prose-h2:text-2xl prose-h3:text-lg sm:prose-h3:text-xl max-w-none focus:outline-none border border-gray-300 dark:border-gray-600 border-t-0 rounded-b-lg p-3 sm:p-4 min-h-[200px] sm:min-h-[300px] -webkit-text-size-adjust-none bg-white dark:bg-gray-900 overflow-x-auto",
+          "prose dark:prose-invert prose-h2:text-xl sm:prose-h2:text-2xl prose-h3:text-lg sm:prose-h3:text-xl max-w-none focus:outline-none border border-gray-300 dark:border-gray-600 border-t-0 rounded-b-lg p-3 sm:p-4 min-h-[200px] sm:min-h-[300px] -webkit-text-size-adjust-none bg-white dark:bg-gray-700 overflow-x-auto",
       },
     },
     onUpdate({ editor }) {

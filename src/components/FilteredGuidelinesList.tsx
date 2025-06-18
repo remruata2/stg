@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import TagBadge from '@/components/ui/TagBadge'
+import { useState } from "react";
+import TagBadge from "@/components/ui/TagBadge";
 
 // Define the types based on Prisma schema (simplified here)
 interface Category {
@@ -30,18 +30,21 @@ interface FilteredGuidelinesListProps {
   currentTagId: string;
 }
 
-export default function FilteredGuidelinesList({ guidelines, currentTagId }: FilteredGuidelinesListProps) {
-  const [searchQuery, setSearchQuery] = useState('')
+export default function FilteredGuidelinesList({
+  guidelines,
+  currentTagId,
+}: FilteredGuidelinesListProps) {
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredGuidelines = guidelines.filter(guideline =>
+  const filteredGuidelines = guidelines.filter((guideline) =>
     guideline.title.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  );
 
   return (
-    <div className="bg-white shadow rounded-lg divide-y divide-gray-200">
+    <div className="bg-white dark:bg-gray-800 shadow rounded-lg divide-y divide-gray-200 dark:divide-gray-700">
       <div className="p-6">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-          <h2 className="text-xl font-semibold text-gray-900 whitespace-nowrap">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap">
             Guidelines with this tag ({filteredGuidelines.length})
           </h2>
           <input
@@ -49,7 +52,7 @@ export default function FilteredGuidelinesList({ guidelines, currentTagId }: Fil
             placeholder="Search guidelines..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="block w-full sm:w-72 rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
+            className="block w-full sm:w-72 rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
           />
         </div>
 
@@ -61,15 +64,21 @@ export default function FilteredGuidelinesList({ guidelines, currentTagId }: Fil
                 className="bg-gray-50 dark:bg-slate-800 p-4 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors duration-200"
               >
                 <div className="flex flex-col sm:flex-row sm:justify-between h-full">
-                  <div className='flex flex-col justify-between flex-grow'>
+                  <div className="flex flex-col justify-between flex-grow">
                     <div>
                       <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        <a href={`/guidelines/${guideline.slug}`} className="hover:underline">
+                        <a
+                          href={`/guidelines/${guideline.slug}`}
+                          className="hover:underline"
+                        >
                           {guideline.title}
                         </a>
                       </h3>
                       <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        <a href={`/categories/${guideline.category.slug}`} className="hover:underline">
+                        <a
+                          href={`/categories/${guideline.category.slug}`}
+                          className="hover:underline"
+                        >
                           {guideline.category.name}
                         </a>
                       </div>
@@ -94,10 +103,12 @@ export default function FilteredGuidelinesList({ guidelines, currentTagId }: Fil
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">No guidelines found matching your search.</p>
+            <p className="text-gray-500 dark:text-gray-400">
+              No guidelines found matching your search.
+            </p>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }

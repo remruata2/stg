@@ -1,22 +1,21 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  // Disable dark mode completely
-  darkMode: false,
+  darkMode: "class",
   theme: {
     extend: {
       typography: {
         DEFAULT: {
           css: {
-            maxWidth: '100%',
-			      p: {
-              marginTop: '1em',
-              marginBottom: '1em',
+            maxWidth: "100%",
+            p: {
+              marginTop: "1em",
+              marginBottom: "1em",
             },
           },
         },
@@ -24,9 +23,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
-}
+  plugins: [require("@tailwindcss/typography")],
+};
 
-export default config
+export default config;

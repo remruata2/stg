@@ -187,3 +187,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide global navbar and footer on auth pages */
+body:has([data-auth-page]) .global-nav,
+body:has([data-auth-page]) .global-footer {
+  display: none !important;
+}
+
+body:has([data-auth-page]) .global-main {
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}

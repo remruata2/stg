@@ -1,175 +1,179 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useToast } from '@/components/ui/Toast'
-import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/Toast";
+import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 interface CategoryItem {
-  id: string
-  name: string
-  slug: string
-  description?: string
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
   _count: {
-    guidelines: number
-  }
+    guidelines: number;
+  };
 }
 
 export default function AdminCategoriesPage() {
-  const [categories, setCategories] = useState<CategoryItem[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [currentCategory, setCurrentCategory] = useState<CategoryItem | null>(null)
-  const [newCategoryName, setNewCategoryName] = useState('')
-  const [newCategoryDescription, setNewCategoryDescription] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const router = useRouter()
-  const { addToast } = useToast()
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState<CategoryItem | null>(
+    null
+  );
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryDescription, setNewCategoryDescription] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { addToast } = useToast();
 
   useEffect(() => {
-    fetchCategories()
-  }, [])
+    fetchCategories();
+  }, []);
 
-  const filteredCategories = categories.filter(category =>
+  const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  );
 
   const fetchCategories = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/categories')
+      const response = await fetch("/api/categories");
       if (!response.ok) {
-        throw new Error('Failed to fetch categories')
+        throw new Error("Failed to fetch categories");
       }
-      const data = await response.json()
-      setCategories(data)
+      const data = await response.json();
+      setCategories(data);
     } catch (error) {
-      console.error('Error fetching categories:', error)
-      addToast('Failed to load categories', 'error')
+      console.error("Error fetching categories:", error);
+      addToast("Failed to load categories", "error");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCreateCategory = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
+    e.preventDefault();
+    setIsSubmitting(true);
+
     try {
-      const response = await fetch('/api/categories', {
-        method: 'POST',
+      const response = await fetch("/api/categories", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: newCategoryName,
           description: newCategoryDescription || undefined,
         }),
-      })
-      
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to create category')
+        throw new Error("Failed to create category");
       }
-      
-      addToast('Category created successfully', 'success')
-      setNewCategoryName('')
-      setNewCategoryDescription('')
-      setShowCreateModal(false)
-      fetchCategories()
+
+      addToast("Category created successfully", "success");
+      setNewCategoryName("");
+      setNewCategoryDescription("");
+      setShowCreateModal(false);
+      fetchCategories();
     } catch (error) {
-      console.error('Error creating category:', error)
-      addToast('Failed to create category', 'error')
+      console.error("Error creating category:", error);
+      addToast("Failed to create category", "error");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleEditCategory = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!currentCategory) return
-    
-    setIsSubmitting(true)
-    
+    e.preventDefault();
+    if (!currentCategory) return;
+
+    setIsSubmitting(true);
+
     try {
       const response = await fetch(`/api/categories/${currentCategory.id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: newCategoryName,
           description: newCategoryDescription || undefined,
         }),
-      })
-      
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to update category')
+        throw new Error("Failed to update category");
       }
-      
-      addToast('Category updated successfully', 'success')
-      setShowEditModal(false)
-      fetchCategories()
+
+      addToast("Category updated successfully", "success");
+      setShowEditModal(false);
+      fetchCategories();
     } catch (error) {
-      console.error('Error updating category:', error)
-      addToast('Failed to update category', 'error')
+      console.error("Error updating category:", error);
+      addToast("Failed to update category", "error");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleDeleteCategory = async () => {
-    if (!currentCategory) return
-    
-    setIsSubmitting(true)
-    
+    if (!currentCategory) return;
+
+    setIsSubmitting(true);
+
     try {
       const response = await fetch(`/api/categories/${currentCategory.id}`, {
-        method: 'DELETE',
-      })
-      
+        method: "DELETE",
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to delete category')
+        throw new Error("Failed to delete category");
       }
-      
-      addToast('Category deleted successfully', 'success')
-      setShowDeleteModal(false)
-      fetchCategories()
+
+      addToast("Category deleted successfully", "success");
+      setShowDeleteModal(false);
+      fetchCategories();
     } catch (error) {
-      console.error('Error deleting category:', error)
-      addToast('Failed to delete category', 'error')
+      console.error("Error deleting category:", error);
+      addToast("Failed to delete category", "error");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const openEditModal = (category: CategoryItem) => {
-    setCurrentCategory(category)
-    setNewCategoryName(category.name)
-    setNewCategoryDescription(category.description || '')
-    setShowEditModal(true)
-  }
+    setCurrentCategory(category);
+    setNewCategoryName(category.name);
+    setNewCategoryDescription(category.description || "");
+    setShowEditModal(true);
+  };
 
   const openDeleteModal = (category: CategoryItem) => {
-    setCurrentCategory(category)
-    setShowDeleteModal(true)
-  }
+    setCurrentCategory(category);
+    setShowDeleteModal(true);
+  };
 
   return (
-    <div className="space-y-6 pt-6">
-      <div className="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold leading-tight text-gray-900">Categories</h1>
-                <div className="mt-3 sm:mt-0 sm:ml-4 flex items-center">
+    <div className="space-y-6 px-6 py-6">
+      <div className="border-b border-gray-200 dark:border-gray-700 pb-5 sm:flex sm:items-center sm:justify-between">
+        <h1 className="text-3xl font-bold leading-tight text-gray-900 dark:text-gray-100">
+          Categories
+        </h1>
+        <div className="mt-3 sm:mt-0 sm:ml-4 flex items-center">
           <div className="mr-4">
             <input
               type="text"
               placeholder="Search categories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
+              className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
             />
           </div>
           <button
@@ -188,20 +192,24 @@ export default function AdminCategoriesPage() {
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
         </div>
       ) : filteredCategories.length > 0 ? (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
+        <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
+          <ul className="divide-y divide-gray-200 dark:divide-gray-700">
             {filteredCategories.map((category) => (
               <li key={category.id}>
                 <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
                   <div className="flex flex-col">
                     <div className="flex items-center">
-                      <h3 className="text-lg font-medium text-gray-900">{category.name}</h3>
-                      <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                        {category.name}
+                      </h3>
+                      <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
                         {category._count.guidelines} guidelines
                       </span>
                     </div>
                     {category.description && (
-                      <p className="mt-1 text-sm text-gray-500">{category.description}</p>
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        {category.description}
+                      </p>
                     )}
                   </div>
                   <div className="flex space-x-2">
@@ -239,13 +247,21 @@ export default function AdminCategoriesPage() {
 
       {/* Create Category Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Create New Category</h2>
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+              Create New Category
+            </h2>
             <form onSubmit={handleCreateCategory}>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
                     Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -253,13 +269,16 @@ export default function AdminCategoriesPage() {
                     id="name"
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
+                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
                     placeholder="Enter category name"
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
                     Description
                   </label>
                   <textarea
@@ -267,7 +286,7 @@ export default function AdminCategoriesPage() {
                     value={newCategoryDescription}
                     onChange={(e) => setNewCategoryDescription(e.target.value)}
                     rows={3}
-                    className="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
+                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
                     placeholder="Enter category description (optional)"
                   />
                 </div>
@@ -280,20 +299,36 @@ export default function AdminCategoriesPage() {
                 >
                   {isSubmitting ? (
                     <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Creating...
                     </span>
                   ) : (
-                    'Create'
+                    "Create"
                   )}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm"
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm"
                 >
                   Cancel
                 </button>
@@ -305,13 +340,21 @@ export default function AdminCategoriesPage() {
 
       {/* Edit Category Modal */}
       {showEditModal && currentCategory && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Edit Category</h2>
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+              Edit Category
+            </h2>
             <form onSubmit={handleEditCategory}>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="edit-name" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="edit-name"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
                     Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -319,13 +362,16 @@ export default function AdminCategoriesPage() {
                     id="edit-name"
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
+                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
                     placeholder="Enter category name"
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="edit-description" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="edit-description"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
                     Description
                   </label>
                   <textarea
@@ -333,7 +379,7 @@ export default function AdminCategoriesPage() {
                     value={newCategoryDescription}
                     onChange={(e) => setNewCategoryDescription(e.target.value)}
                     rows={3}
-                    className="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
+                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
                     placeholder="Enter category description (optional)"
                   />
                 </div>
@@ -346,20 +392,36 @@ export default function AdminCategoriesPage() {
                 >
                   {isSubmitting ? (
                     <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Updating...
                     </span>
                   ) : (
-                    'Update'
+                    "Update"
                   )}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm"
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm"
                 >
                   Cancel
                 </button>
@@ -371,14 +433,21 @@ export default function AdminCategoriesPage() {
 
       {/* Delete Category Modal */}
       {showDeleteModal && currentCategory && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Delete Category</h2>
-            <p className="text-sm text-gray-500">
-              Are you sure you want to delete the category "{currentCategory.name}"? This action cannot be undone.
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+              Delete Category
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete the category "
+              {currentCategory.name}"? This action cannot be undone.
               {currentCategory._count.guidelines > 0 && (
                 <span className="block mt-2 text-red-500 font-medium">
-                  Warning: This category has {currentCategory._count.guidelines} guidelines that will also be deleted.
+                  Warning: This category has {currentCategory._count.guidelines}{" "}
+                  guidelines that will also be deleted.
                 </span>
               )}
             </p>
@@ -391,20 +460,36 @@ export default function AdminCategoriesPage() {
               >
                 {isSubmitting ? (
                   <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Deleting...
                   </span>
                 ) : (
-                  'Delete'
+                  "Delete"
                 )}
               </button>
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm"
               >
                 Cancel
               </button>
@@ -413,5 +498,5 @@ export default function AdminCategoriesPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
