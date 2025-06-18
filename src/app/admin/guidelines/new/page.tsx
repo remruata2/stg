@@ -1,10 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import GuidelineForm from '@/components/GuidelineForm'
-import { useToast } from '@/components/ui/Toast'
-import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { guidelineSchema, GuidelineFormValues } from '@/types/guideline';
+import { useToast } from '@/components/ui/Toast';
+import GuidelineForm from '@/components/GuidelineForm';
+
 
 interface TagItem {
   id: string
@@ -23,105 +26,85 @@ interface CategoryItem {
   }
 }
 
+
+
 export default function AdminNewGuidelinePage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [categories, setCategories] = useState<CategoryItem[]>([])
-  const [availableTags, setAvailableTags] = useState<TagItem[]>([])
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true)
-  const [isLoadingTags, setIsLoadingTags] = useState(true)
-  const router = useRouter()
-  const { addToast } = useToast()
-  const { data: session, status } = useSession()
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
+  const [availableTags, setAvailableTags] = useState<TagItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const { addToast } = useToast();
   
-  // Debug auth status
   useEffect(() => {
-    console.log('Auth status:', status)
-    console.log('Session:', session)
-  }, [session, status])
-  
-  // Fetch categories when component mounts
-  useEffect(() => {
-    async function fetchCategories() {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/categories')
-        if (!response.ok) {
-          throw new Error('Failed to fetch categories')
+        const [catResponse, tagsResponse] = await Promise.all([
+          fetch('/api/categories'),
+          fetch('/api/tags'),
+        ]);
+        if (!catResponse.ok || !tagsResponse.ok) {
+          throw new Error('Failed to fetch initial data');
         }
-        const data = await response.json()
-        setCategories(data)
+        const cats = await catResponse.json();
+        const tags = await tagsResponse.json();
+        setCategories(cats);
+        setAvailableTags(tags);
       } catch (error) {
-        console.error('Error fetching categories:', error)
-        addToast('Failed to load categories', 'error')
+        console.error('Error fetching data:', error);
+        addToast('Failed to load categories and tags.', 'error');
       } finally {
-        setIsLoadingCategories(false)
+        setIsLoading(false);
       }
-    }
-    
-    fetchCategories()
-  }, [addToast])
-  
-  // Fetch tags when component mounts
-  useEffect(() => {
-    async function fetchTags() {
-      try {
-        const response = await fetch('/api/tags')
-        if (!response.ok) {
-          throw new Error('Failed to fetch tags')
-        }
-        const data = await response.json()
-        setAvailableTags(data)
-      } catch (error) {
-        console.error('Error fetching tags:', error)
-        addToast('Failed to load tags', 'error')
-      } finally {
-        setIsLoadingTags(false)
-      }
-    }
-    
-    fetchTags()
-  }, [addToast])
-  
-  const handleSubmit = async (data: any) => {
-    console.log('New guideline handleSubmit called with:', data);
-    setIsLoading(true)
-    
+    };
+    fetchData();
+  }, [addToast]);
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<GuidelineFormValues>({
+    resolver: zodResolver(guidelineSchema),
+    defaultValues: {
+      title: '',
+      content: '',
+      categoryId: '',
+      tags: [],
+      references: [],
+    },
+  });
+
+  const selectedTags = watch('tags');
+
+  const handleTagsChange = (tags: TagItem[]) => {
+    setValue('tags', tags.map(t => t.id), { shouldValidate: true });
+  };
+
+  const onSubmit = async (data: GuidelineFormValues) => {
     try {
-      console.log('Sending POST request to /api/guidelines with:', data);
-      
       const response = await fetch('/api/guidelines', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      })
-      
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-      
+      });
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Error response data:', errorData);
+        const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to create guideline');
       }
-      
-      const guideline = await response.json();
-      console.log('Success response:', guideline);
-      
-      // Show success toast notification
-      addToast('Guideline created successfully', 'success');
-      
-      // Redirect to the admin guidelines list page
-      router.push(`/admin/guidelines`);
+
+      addToast('Guideline created successfully!', 'success');
+      router.push('/admin/guidelines');
       router.refresh();
     } catch (error) {
       console.error('Error creating guideline:', error);
-      // Show error toast notification
-      addToast(`Failed to create guideline: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
-    } finally {
-      setIsLoading(false);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      addToast(errorMessage, 'error');
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -131,19 +114,32 @@ export default function AdminNewGuidelinePage() {
           Create a new treatment guideline with detailed information
         </p>
       </div>
-      
+
       <div className="bg-white shadow rounded-lg p-6">
-        {isLoadingCategories || isLoadingTags ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
+        {isLoading ? (
+          <p>Loading form...</p>
         ) : (
-          <GuidelineForm 
-            categories={categories as any} 
-            availableTags={availableTags as any}
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-          />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <GuidelineForm
+              control={control}
+              register={register}
+              errors={errors}
+              categories={categories}
+              availableTags={availableTags}
+              selectedTags={availableTags.filter(t => selectedTags.includes(t.id))}
+              onTagsChange={handleTagsChange}
+            />
+
+            
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            >
+              {isSubmitting ? 'Creating...' : 'Create Guideline'}
+            </button>
+          </form>
         )}
       </div>
     </div>

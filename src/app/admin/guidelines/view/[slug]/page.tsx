@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
 import { PencilIcon, TrashIcon, ArrowLeftIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import TagBadge from '@/components/ui/TagBadge'
-import Markdown from 'react-markdown'
+
 
 interface GuidelineDetail {
   id: string
@@ -220,8 +220,11 @@ export default function AdminViewGuideline({ params }: { params: Promise<{ slug:
         <div className="px-4 py-5 sm:px-6">
           <h3 className="text-lg leading-6 font-medium text-gray-900">Content</h3>
         </div>
-        <div className="border-t border-gray-200 px-4 py-5 sm:px-6 prose max-w-none">
-          <Markdown>{guideline.content}</Markdown>
+        <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+          <div
+            className="prose dark:prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: guideline.content }}
+          />
         </div>
       </div>
 

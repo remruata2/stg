@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { guidelineSchema, GuidelineFormValues } from '@/types/guideline';
 import GuidelineForm from "@/components/GuidelineForm";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -29,6 +32,11 @@ interface AdminGuidelineItem {
 	content: string;
 	categoryId: string;
 	tags: AdminTagItem[];
+	references?: {
+		title: string;
+		url?: string;
+		description?: string;
+	}[];
 	category: {
 		id: string;
 		name: string;
@@ -45,6 +53,19 @@ export default function EditGuidelineClient({ id }: { id: string }) {
 	const router = useRouter();
 	const { addToast } = useToast();
 
+  
+
+  const { register, control, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<GuidelineFormValues>({
+    resolver: zodResolver(guidelineSchema),
+    defaultValues: {
+      title: guideline?.title || '',
+      content: guideline?.content || '',
+      categoryId: guideline?.categoryId || '',
+      tags: guideline?.tags.map((t: any) => t.id) || [],
+      references: guideline?.references || [],
+    }
+  });
+
 	useEffect(() => {
 		const fetchData = async () => {
 			setIsLoading(true);
@@ -57,6 +78,11 @@ export default function EditGuidelineClient({ id }: { id: string }) {
 				const guidelineData = await guidelineResponse.json();
 				console.log('[EditGuidelineClient] Fetched guidelineData:', JSON.stringify(guidelineData, null, 2)); // Log fetched data
 				setGuideline(guidelineData);
+        setValue('title', guidelineData.title);
+        setValue('content', guidelineData.content);
+        setValue('categoryId', guidelineData.categoryId);
+        setValue('tags', guidelineData.tags.map((t: any) => t.id));
+        setValue('references', guidelineData.references || []);
 
 				// Fetch categories
 				const categoriesResponse = await fetch("/api/categories");
@@ -89,14 +115,12 @@ export default function EditGuidelineClient({ id }: { id: string }) {
 
 	// No need for handleCategoryChange function as subcategories have been removed
 
-	const handleSubmit = async (formData: {
-		title: string;
-		content: string;
-		categoryId: string;
-		tags: string[];
-		references?: Array<{ title: string; url?: string; description?: string }>; // Add references here
-	}) => {
-		console.log('EditGuidelineClient handleSubmit called with:', formData);
+	const handleTagsChange = (tags: AdminTagItem[]) => {
+    setValue('tags', tags.map(t => t.id), { shouldValidate: true });
+  };
+
+	const onSubmit = async (formData: GuidelineFormValues) => {
+		console.log('EditGuidelineClient onSubmit called with:', formData);
 		console.log('Guideline ID:', id);
 		
 		try {
@@ -105,7 +129,7 @@ export default function EditGuidelineClient({ id }: { id: string }) {
 				content: formData.content,
 				categoryId: formData.categoryId,
 				tagIds: formData.tags,
-				references: formData.references, // Add references to request body
+				references: formData.references,
 			};
 			
 			console.log('Sending PUT request to:', `/api/guidelines/${id}`);
@@ -181,14 +205,25 @@ export default function EditGuidelineClient({ id }: { id: string }) {
 				</div>
 			</div>
 
-			<GuidelineForm 
-          key={guideline.id} // Force re-mount on data load
-          initialData={guideline}
+			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <GuidelineForm
+          control={control}
+          register={register}
+          errors={errors}
           categories={categories}
           availableTags={availableTags}
-          onSubmit={handleSubmit}
-          submitButtonText="Update Guideline"
+          selectedTags={availableTags.filter(t => watch('tags', []).includes(t.id))}
+          onTagsChange={handleTagsChange}
+          initialContent={guideline.content}
         />
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+        >
+          {isSubmitting ? 'Updating...' : 'Update Guideline'}
+        </button>
+      </form>
 		</div>
 	);
 }

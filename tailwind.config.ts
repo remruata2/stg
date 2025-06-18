@@ -14,6 +14,10 @@ const config: Config = {
         DEFAULT: {
           css: {
             maxWidth: '100%',
+			      p: {
+              marginTop: '1em',
+              marginBottom: '1em',
+            },
           },
         },
         // Dark typography styles removed to enforce light mode only
