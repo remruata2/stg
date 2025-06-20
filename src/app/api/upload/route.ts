@@ -3,6 +3,13 @@ import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import { mkdirSync } from 'fs';
 
+// Get the base URL for static assets - adjust this based on your hosting environment
+const getBaseUrl = () => {
+  // In development, use /uploads directly (Next.js serves from public/)
+  // In production, you might need to adjust this path based on your hosting setup
+  return process.env.NEXT_PUBLIC_UPLOADS_PATH || '/uploads';
+};
+
 export async function POST(request: NextRequest) {
   const data = await request.formData();
   const file: File | null = data.get('file') as unknown as File;
@@ -29,7 +36,9 @@ export async function POST(request: NextRequest) {
   try {
     await writeFile(path, buffer);
     console.log(`Uploaded file saved to: ${path}`);
-    return NextResponse.json({ success: true, url: `/uploads/${filename}` });
+    const baseUrl = getBaseUrl();
+    const imageUrl = `${baseUrl}/${filename}`.replace(/\/\//g, '/'); // Ensure no double slashes
+    return NextResponse.json({ success: true, url: imageUrl });
   } catch (error) {
     console.error('Error saving file:', error);
     return NextResponse.json({ success: false, error: 'Could not save file' }, { status: 500 });
