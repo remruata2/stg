@@ -39,17 +39,36 @@ export default function AdminGuidelinesPage() {
   const [currentGuideline, setCurrentGuideline] =
     useState<GuidelineItem | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { addToast } = useToast();
 
   useEffect(() => {
     fetchGuidelines();
+    fetchCategories();
   }, []);
 
-  const filteredGuidelines = guidelines.filter((guideline) =>
-    guideline.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/categories');
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      addToast('Failed to load categories', 'error');
+    }
+  };
+
+  const filteredGuidelines = guidelines
+    .filter(guideline => 
+      guideline.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (selectedCategory === '' || guideline.categoryId === selectedCategory)
+    )
+    .sort((a, b) => a.title.localeCompare(b.title));
 
   const fetchGuidelines = async () => {
     setIsLoading(true);
@@ -109,27 +128,44 @@ export default function AdminGuidelinesPage() {
 
   return (
     <div className="space-y-6 px-6 py-6">
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-5 sm:flex sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold leading-tight text-gray-900 dark:text-gray-100">
-          Guidelines
-        </h1>
-        <div className="mt-3 sm:mt-0 sm:ml-4 flex items-center">
-          <div className="mr-4">
+      <div className="border-b border-gray-200 dark:border-gray-700 pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+          <h1 className="text-3xl font-bold leading-tight text-gray-900 dark:text-gray-100 mb-4 sm:mb-0">
+            Guidelines
+          </h1>
+          <Link
+            href="/admin/guidelines/new"
+            className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto w-full"
+          >
+            <PlusIcon className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
+            New Guideline
+          </Link>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
             <input
               type="text"
               placeholder="Search guidelines..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base px-3 py-2"
+              className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base px-3 py-2"
             />
           </div>
-          <Link
-            href="/admin/guidelines/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <PlusIcon className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
-            New Guideline
-          </Link>
+          <div>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base px-3 py-2"
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
