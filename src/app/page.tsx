@@ -42,27 +42,16 @@ export default async function Home() {
 	const allCategories = await getAllCategories();
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center px-4 py-8">
-			{/* Logo */}
-			<div className="mb-4">
+		<div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center px-4">
+			{/* Logo and Search Section */}
+			<div className="w-full max-w-4xl mb-12 flex flex-col items-center">
 				<Image
 					src="/logostg.png"
-					alt="STG Wiki Logo"
+					alt="STG Mizoram Logo"
 					width={200}
 					height={200}
-					priority
+					className="mb-8"
 				/>
-			</div>
-
-			{/* Title and Subtitle */}
-			<h1 className="sr-only">Standard Treatment Guidelines Mizoram</h1>
-
-			<p className="text-xl text-slate-600 dark:text-slate-500 mb-8">
-				Health & Family Welfare Department, Mizoram
-			</p>
-
-			{/* Search Bar */}
-			<div className="w-full max-w-2xl mb-12">
 				<SearchBar />
 			</div>
 
@@ -76,16 +65,16 @@ export default async function Home() {
 							<Link
 								key={category.id}
 								href={`/categories/${category.slug}`}
-								className="group bg-white dark:bg-slate-800 p-6 shadow-lg rounded-xl hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4 text-left hover:bg-slate-50 dark:hover:bg-slate-700"
+								className="group bg-gray-800 dark:bg-slate-800 p-6 shadow-lg rounded-xl hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4 text-left hover:bg-gray-700 dark:hover:bg-slate-700"
 							>
 								<div className="flex-shrink-0">
-									<IconComponent className="h-10 w-10 text-blue-600 dark:text-blue-400" />
+									<IconComponent className="h-10 w-10 text-cyan-400" />
 								</div>
 								<div>
-									<h3 className="text-lg font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+									<h3 className="text-lg font-semibold text-white dark:text-white group-hover:text-gray-300 dark:group-hover:text-blue-400">
 										{category.name}
 									</h3>
-									<p className="text-sm text-slate-500 dark:text-slate-400">
+									<p className="text-sm text-gray-400 dark:text-slate-400">
 										{category._count.guidelines.toLocaleString()} guidelines
 									</p>
 								</div>
