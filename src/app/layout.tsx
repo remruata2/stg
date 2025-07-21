@@ -44,15 +44,8 @@ export default function RootLayout({
 										{/* Powered by MHSSP */}
 										<div className="flex items-center space-x-3">
 											<span className="text-sm text-gray-500 dark:text-gray-400">
-												Powered by
+												Powered by MHSSP
 											</span>
-											<Image
-												src="/logomhsssp.webp"
-												alt="MHSSP Logo"
-												width={150}
-												height={150}
-												className="h-15 w-auto"
-											/>
 										</div>
 
 										{/* Copyright */}
