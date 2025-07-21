@@ -60,12 +60,7 @@ export default async function GuidelinePage({
             >
               Overview
             </a>
-            <a
-              href="#treatment"
-              className="block px-3 py-2 text-sm rounded-md text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100"
-            >
-              Treatment
-            </a>
+
             <a
               href="#references"
               className="block px-3 py-2 text-sm rounded-md text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100"

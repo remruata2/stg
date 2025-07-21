@@ -55,9 +55,10 @@ export default async function Home() {
 			</div>
 
 			{/* Title and Subtitle */}
-			<h1 className="sr-only">Standard Treatment Guidelines</h1>
-			<p className="text-2xl text-slate-600 dark:text-slate-500 mb-8">
-				Standard Treatment Guidelines
+			<h1 className="sr-only">Standard Treatment Guidelines Mizoram</h1>
+
+			<p className="text-xl text-slate-600 dark:text-slate-500 mb-8">
+				Health & Family Welfare Department, Mizoram
 			</p>
 
 			{/* Search Bar */}
